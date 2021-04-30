@@ -1,0 +1,118 @@
+@charset "ISO-8859-1";
+
+.app {
+    display: grid;
+    background:#dee2e678;
+    height: 100vh;
+    grid-template-columns: minmax(min-content, max-content) 1fr 1fr 1fr;
+    grid-template-rows: 0.3fr 1fr 1fr 1fr 0.2fr;
+    grid-template-areas: 
+    " header  header      header     header "
+    " sidebar chatscreen chatscreen chatscreen"
+    " sidebar chatscreen chatscreen chatscreen"
+    " sidebar chatscreen chatscreen chatscreen"
+    " adduser chatform   chatform   chatform  ";
+  }
+  
+.header{
+    grid-area: header;
+    text-align:center;
+    background: linear-gradient(90deg, #2EC4B6, #9EB1E9);
+  }
+
+.header form :hover{
+	cursor:pointer;
+}
+.sidebar{
+   	grid-area: sidebar;
+   	text-align:center;
+  	background: #43d3c5;
+    overflow:scroll;
+    color:white;
+  
+}
+
+.email_list{
+	padding: 10px;
+	cursor:pointer;
+}
+#conversationDiv {
+	padding-left:10px;
+}
+#response{
+	padding-left:10px;
+}
+
+
+
+ 
+.chatscreen{
+ 	grid-area:chatscreen;
+ 	overflow-y: scroll;
+ 	background: rgba(255, 255, 255, 0.1);
+}
+ 
+
+.add_user{
+	grid-area: adduser;
+	text-align:center;
+	border: 1px solid #e0e9ec;
+	 
+}
+.add_user input{
+	border: none;
+    background: transparent;
+    padding: 0.8em;
+    outline: none;
+    width: 100%;
+}
+
+.cursor_pointer{
+	cursor:pointer;
+}
+.vertical-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.vertical-center input{
+	margin: 10px;
+}
+
+
+
+.chatform{
+    grid-area: chatform;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    border-top: 1px solid #e0e9ec;
+  
+}
+
+.chatform_form {
+	width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.text_input{
+	border: none;
+    background: transparent;
+    padding: 0.8em;
+    outline: none;
+    width: 100%;
+}
+.submit_input{
+	 background: #43d3c5;
+    color: #FFF;
+    width: 17%;
+    border-radius: 4px;
+    padding: 0.8em;
+    margin: 0 1em;
+    border: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}

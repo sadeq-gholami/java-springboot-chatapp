@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<title>chat room</title>
+	<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css" />
+	<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+	<link th:href="@{/public/style.css}" rel="stylesheet"/>
+	
+	  <script type="text/javascript">
+            var stompClient = null;
+            var roomname;
+            var bottom;
+            
+            function connect() {
+            	bottom = document.getElementById('chatscreen');
+            	scrollToBottom ();
+            	roomname = "[[${#session.getAttribute('roomName')}]]";
+                var socket = new SockJS('/chat/');
+                stompClient = Stomp.over(socket);  
+                stompClient.connect({}, function(frame) {
+                    console.log('Connected: ' + frame);
+                    stompClient.subscribe('/topic/messages/'+roomname, function(messageOutput) {
+                        showMessageOutput(JSON.parse(messageOutput.body));
+                    });
+                });
+                
+            }
+            
+            function disconnect() {
+                if(stompClient != null) {
+                    stompClient.disconnect();
+                }
+                setConnected(false);
+                console.log("Disconnected");
+            }
+            
+            function sendMessage(e) {
+            	 
+                var from = document.getElementById('from').value;
+                var text = document.getElementById('text').value;
+                stompClient.send("/app/chat/"+roomname, {}, 
+                  JSON.stringify({'sender':from, 'content':text}));
+                 document.getElementById('text').value='';
+                 
+            }
+            
+            function showMessageOutput(messageOutput) {
+                var response = document.getElementById('response');
+                var p = document.createElement('p');
+                p.style.wordWrap = 'break-word';
+                p.appendChild(document.createTextNode(messageOutput.sender + ": " 
+                  + messageOutput.text + " (" + messageOutput.time + ")"));
+                response.appendChild(p);
+                scrollToBottom ();
+            }
+            $(function () {
+           	
+			    $("#myForm").on('submit', function (e) {
+			        e.preventDefault();
+			    });
+			    $( "#sendMessage" ).click(function() { sendMessage(); });
+			});
+        
+		
+			function scrollToBottom () {
+				var scrollingElement = (bottom || document.body);
+			   scrollingElement.scrollTop = scrollingElement.scrollHeight;
+			}
+        </script>
+</head>
+<body onload="connect('')">
+	<div class="app">
+	    <div class = "header">
+	    	<h4>
+		                Welcome to <b>[[${#session.getAttribute('roomName')}]]</b>
+		                
+		     </h4>
+	    	<div class="vertical-center">
+		        <form th:action="@{/logout}" method="post">
+		            
+		            <input type="submit" value="Sign Out" />
+		        </form>
+		        <form th:action="@{/chat_rooms}">
+		           
+		            <input type="submit" value="chat rooms" />
+		        </form>
+	        </div>
+	    </div>
+	    <div class= "sidebar">
+        	<h4>Room Members</h4>
+    	     
+			<div class= "email_list" th:each="member: ${members}">
+			    <div th:text="${member.email}">E-mail</div>
+			</div>       
+	    </div>
+	   
+	    <div class="add_user">
+	     <div class="alert-danger" role="alert" th:text="${error}" th:if="${error}"><h5 class= "alert-heading">warning</h5></div>
+	    	<form th:action="@{/add_user}" method="post">
+	    		<input type="email" placeholder="add member" name="memberToAdd" id="memberToAdd" equired />
+	        </form>
+	    </div>
+	    <div class = "chatscreen" id = "chatscreen">
+	    	<div>
+            <div>
+                <input type="hidden" id="from" th:value="${#session.getAttribute('firstName')}"/>
+            </div>
+            <br />
+            
+            <div id="conversationDiv" th:each="message: ${messages}">
+				<p th:text="${message.sender} +': '+ ${message.content} +' (' + ${message.time} + ')'"></p>
+            </div>
+            <p id="response"></p>
+        </div>
+ 
+	    </div>
+	    <div class = "chatform" >
+	    	<form class="chatform_form" id = "myForm">
+	    		<input class="text_input" type="text" id="text" placeholder="type message..." autocomplete="off" name="message" />
+	    		<input class= "submit_input" id="sendMessage" type="submit" value="send" />
+	    	</form>
+	    </div>
+	</div>
+</body>
+</html>
